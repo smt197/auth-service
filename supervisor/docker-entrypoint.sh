@@ -15,6 +15,10 @@ php artisan migrate --force --no-interaction
 echo "🚀 Installing Octane with FrankenPHP..."
 php artisan octane:install --server=frankenphp --no-interaction
 
+# Make the FrankenPHP binary executable
+echo "🔧 Making FrankenPHP binary executable..."
+chmod +x /app/frankenphp
+
 # Clear and cache config for production
 echo "🔧 Optimizing application..."
 php artisan config:clear --no-interaction
