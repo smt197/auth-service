@@ -19,6 +19,10 @@ RUN install-php-extensions \
 # Installer composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Install Laravel Octane first (before other dependencies)
+RUN composer require laravel/octane --no-interaction --ignore-platform-reqs
+RUN php /app/artisan octane:install --server=frankenphp
+
 # Installer Node.js et supervisor
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get update && apt-get install -y nodejs supervisor \
