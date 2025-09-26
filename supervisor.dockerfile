@@ -19,8 +19,6 @@ RUN install-php-extensions \
 # Installer composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-
-
 # Installer Node.js et supervisor
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get update && apt-get install -y nodejs supervisor \
@@ -39,8 +37,9 @@ RUN pecl install xdebug
 
 # Install Laravel Octane first (before other dependencies)
 RUN composer require laravel/octane --no-interaction --ignore-platform-reqs
+RUN php /app/artisan octane:install --server=frankenphp
 
-# Installer les dépendances PHP
+# Install PHP dependencies
 RUN composer install \
     --no-dev \
     --no-interaction \
@@ -52,8 +51,11 @@ RUN composer install \
 # Enable PHP extensions
 RUN docker-php-ext-enable xdebug
 
+
 # Créer les répertoires nécessaires et définir les permissions
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
+
+
 
 # Copier la configuration supervisor
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
@@ -68,5 +70,6 @@ EXPOSE 80 443 2019
 
 # Utiliser le script de démarrage qui lance supervisor
 CMD ["/usr/local/bin/docker-entrypoint.sh"]
+
 
 
