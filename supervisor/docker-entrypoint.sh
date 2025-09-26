@@ -10,6 +10,10 @@ if [ ! -f /app/.env ]; then
     echo "📄 Creating .env file from example..."
     cp /app/.env.example /app/.env
     php artisan key:generate --no-interaction --force
+
+    # Configure sessions for file storage temporarily
+    sed -i 's/SESSION_DRIVER=database/SESSION_DRIVER=file/' /app/.env
+    sed -i 's/CACHE_STORE=database/CACHE_STORE=file/' /app/.env
 fi
 
 # Test basic Laravel functionality
