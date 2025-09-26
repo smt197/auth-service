@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Exit on any error
-set -e
+# Continue on errors for debugging
+# set -e
 
 echo "🚀 Starting Laravel application..."
 
