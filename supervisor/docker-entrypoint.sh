@@ -56,7 +56,11 @@ chmod -R 755 /app/public
 # Ensure session directory has proper permissions
 mkdir -p /app/storage/framework/sessions
 chown -R www-data:www-data /app/storage/framework/sessions
-chmod -R 775 /app/storage/framework/sessions
+chmod -R 777 /app/storage/framework/sessions
+
+# Clear any cached config that might cause issues
+php artisan config:clear --no-interaction || true
+php artisan cache:clear --no-interaction || true
 
 echo "✅ Laravel application ready!"
 
