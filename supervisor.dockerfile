@@ -37,7 +37,7 @@ RUN pecl install xdebug
 
 # Install Laravel Octane first (before other dependencies)
 RUN composer require laravel/octane --no-interaction --ignore-platform-reqs
-RUN php /app/artisan octane:install --server=frankenphp
+RUN php /app/artisan octane:install --server=frankenphp --no-interaction
 
 # Install PHP dependencies
 RUN composer install \
@@ -61,6 +61,10 @@ RUN mkdir -p /app/storage/app/public \
     /app/bootstrap/cache \
     && chown -R www-data:www-data /app/storage /app/bootstrap/cache \
     && chmod -R 775 /app/storage /app/bootstrap/cache
+
+# Fix FrankenPHP permissions for Octane
+RUN chown www-data:www-data /usr/local/bin/frankenphp \
+    && chmod 755 /usr/local/bin/frankenphp
 
 
 
