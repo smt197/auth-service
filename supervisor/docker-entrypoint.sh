@@ -32,10 +32,16 @@ if [ ! -L /app/public/storage ]; then
     php artisan storage:link --no-interaction
 fi
 
-# Set proper permissions
+# Set proper permissions for all Laravel directories
 echo "🔒 Setting permissions..."
-chown -R www-data:www-data /app/storage /app/bootstrap/cache
+chown -R www-data:www-data /app/storage /app/bootstrap/cache /app/public
 chmod -R 775 /app/storage /app/bootstrap/cache
+chmod -R 755 /app/public
+
+# Ensure session directory has proper permissions
+mkdir -p /app/storage/framework/sessions
+chown -R www-data:www-data /app/storage/framework/sessions
+chmod -R 775 /app/storage/framework/sessions
 
 echo "✅ Laravel application ready!"
 
