@@ -13,7 +13,7 @@ php artisan migrate --force --no-interaction
 
 # Install Octane with FrankenPHP
 echo "🚀 Installing Octane with FrankenPHP..."
-php artisan octane:install --server=frankenphp
+php artisan octane:install --server=frankenphp --no-interaction
 
 # Clear and cache config for production
 echo "🔧 Optimizing application..."
