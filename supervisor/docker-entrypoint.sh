@@ -5,6 +5,17 @@ set -e
 
 echo "🚀 Starting Laravel application..."
 
+# Check if .env exists, create from example if not
+if [ ! -f /app/.env ]; then
+    echo "📄 Creating .env file from example..."
+    cp /app/.env.example /app/.env
+    php artisan key:generate --no-interaction --force
+fi
+
+# Test basic Laravel functionality
+echo "🧪 Testing Laravel configuration..."
+php artisan --version || echo "❌ Laravel not working"
+
 echo "✅ Database connection established"
 
 # Run migrations
