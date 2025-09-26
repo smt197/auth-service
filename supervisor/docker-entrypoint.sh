@@ -11,10 +11,6 @@ echo "✅ Database connection established"
 echo "🔄 Running database migrations..."
 php artisan migrate --force --no-interaction
 
-# Install Octane with FrankenPHP
-echo "🚀 Installing Octane with FrankenPHP..."
-php artisan octane:install --server=frankenphp
-
 # Clear and cache config for production
 echo "🔧 Optimizing application..."
 php artisan config:clear --no-interaction
