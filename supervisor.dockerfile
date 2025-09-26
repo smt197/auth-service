@@ -36,8 +36,13 @@ COPY . /app
 RUN pecl install xdebug
 
 # Installer les dépendances PHP
-RUN composer install --no-dev --optimize-autoloader
-
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --optimize-autoloader \
+    --no-progress \
+    --ignore-platform-reqs \
+    && rm -rf /root/.composer/cache
 
 # Enable PHP extensions
 RUN docker-php-ext-enable xdebug
