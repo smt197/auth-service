@@ -48,8 +48,9 @@ RUN pecl install xdebug
 # Enable PHP extensions
 RUN docker-php-ext-enable xdebug
 
-# Installer les dépendances PHP (après création des répertoires)
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Installer les dépendances PHP d'abord avec dev, puis nettoyer
+RUN composer install --no-interaction --verbose && \
+    composer install --no-dev --optimize-autoloader --no-interaction
 
 
 
