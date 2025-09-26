@@ -11,6 +11,10 @@ echo "✅ Database connection established"
 echo "🔄 Running database migrations..."
 php artisan migrate --force --no-interaction
 
+# Install Octane with FrankenPHP
+echo "🚀 Installing Octane with FrankenPHP..."
+php artisan octane:install --server=frankenphp
+
 # Clear and cache config for production
 echo "🔧 Optimizing application..."
 php artisan config:clear --no-interaction
@@ -24,14 +28,8 @@ if [ ! -L /app/public/storage ]; then
     php artisan storage:link --no-interaction
 fi
 
-# Set proper permissions for all Laravel directories
+# Set proper permissions
 echo "🔒 Setting permissions..."
-chown -R www-data:www-data /app/storage /app/bootstrap/cache /app/public
-chmod -R 775 /app/storage /app/bootstrap/cache
-chmod -R 755 /app/public
-
-# Ensure critical directories exist and have correct permissions
-mkdir -p /app/storage/logs /app/storage/framework/{cache,sessions,views} /app/storage/app/public /app/bootstrap/cache
 chown -R www-data:www-data /app/storage /app/bootstrap/cache
 chmod -R 775 /app/storage /app/bootstrap/cache
 

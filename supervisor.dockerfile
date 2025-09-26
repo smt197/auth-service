@@ -35,36 +35,16 @@ COPY . /app
 # Install PHP extensions
 RUN pecl install xdebug
 
-# Install Laravel Octane first (before other dependencies)
-RUN composer require laravel/octane --no-interaction --ignore-platform-reqs
-RUN php /app/artisan octane:install --server=frankenphp --no-interaction
+# Installer les dépendances PHP
+RUN composer install --no-dev --optimize-autoloader
 
-# Install PHP dependencies
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --optimize-autoloader \
-    --no-progress \
-    --ignore-platform-reqs \
-    && rm -rf /root/.composer/cache
 
 # Enable PHP extensions
 RUN docker-php-ext-enable xdebug
 
 
-# Créer les répertoires nécessaires avec les bonnes permissions
-RUN mkdir -p /app/storage/app/public \
-    /app/storage/framework/cache \
-    /app/storage/framework/sessions \
-    /app/storage/framework/views \
-    /app/storage/logs \
-    /app/bootstrap/cache \
-    && chown -R www-data:www-data /app/storage /app/bootstrap/cache \
-    && chmod -R 775 /app/storage /app/bootstrap/cache
-
-# Fix FrankenPHP permissions for Octane
-RUN chown www-data:www-data /usr/local/bin/frankenphp \
-    && chmod 755 /usr/local/bin/frankenphp
+# Créer les répertoires nécessaires et définir les permissions
+RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
 
 
@@ -81,6 +61,5 @@ EXPOSE 80 443 2019
 
 # Utiliser le script de démarrage qui lance supervisor
 CMD ["/usr/local/bin/docker-entrypoint.sh"]
-
 
 
