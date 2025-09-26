@@ -32,19 +32,24 @@ WORKDIR /app
 # Copier TOUT le projet Laravel
 COPY . /app
 
+# Créer les répertoires nécessaires d'abord
+RUN mkdir -p /app/storage/app/public \
+    /app/storage/framework/cache \
+    /app/storage/framework/sessions \
+    /app/storage/framework/views \
+    /app/storage/logs \
+    /app/bootstrap/cache \
+    && chown -R www-data:www-data /app/storage /app/bootstrap/cache \
+    && chmod -R 775 /app/storage /app/bootstrap/cache
+
 # Install PHP extensions
 RUN pecl install xdebug
-
-# Installer les dépendances PHP
-RUN composer install --no-dev --optimize-autoloader
-
 
 # Enable PHP extensions
 RUN docker-php-ext-enable xdebug
 
-
-# Créer les répertoires nécessaires et définir les permissions
-RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
+# Installer les dépendances PHP (après création des répertoires)
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 
 
