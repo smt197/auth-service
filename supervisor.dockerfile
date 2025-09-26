@@ -13,7 +13,10 @@ RUN install-php-extensions \
    gd \
    redis \
    opcache \
-   pcntl
+   pcntl \
+   curl \
+   fileinfo \
+   tokenizer
 
 
 # Installer composer
@@ -48,9 +51,11 @@ RUN pecl install xdebug
 # Enable PHP extensions
 RUN docker-php-ext-enable xdebug
 
-# Installer les dépendances PHP d'abord avec dev, puis nettoyer
-RUN composer install --no-interaction --verbose && \
-    composer install --no-dev --optimize-autoloader --no-interaction
+# Vérifier que PHP et les extensions sont ok, puis installer les dépendances
+RUN php -m && \
+    composer --version && \
+    composer validate --no-check-publish && \
+    composer install --no-interaction --ignore-platform-reqs
 
 
 
