@@ -35,6 +35,9 @@ WORKDIR /app
 # Copier TOUT le projet Laravel
 COPY . /app
 
+# Copier le Caddyfile
+COPY Caddyfile /app/Caddyfile
+
 # Créer les répertoires nécessaires d'abord
 RUN mkdir -p /app/storage/app/public \
     /app/storage/framework/cache \
