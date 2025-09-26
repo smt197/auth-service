@@ -1,24 +1,14 @@
 {
-    frankenphp {
-        num_threads 8
-    }
+    frankenphp
+    order php_server before file_server
 }
 
 :80 {
     root * /app/public
 
-    # Handle PHP files
-    php_server {
-        root /app/public
-    }
+    php_server
 
-    # Handle Laravel routing
     try_files {path} {path}/ /index.php?{query}
 
-    # Ensure proper headers
-    header {
-        -Server
-        +X-Frame-Options DENY
-        +X-Content-Type-Options nosniff
-    }
+    file_server
 }
