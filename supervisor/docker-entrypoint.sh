@@ -31,9 +31,9 @@ chmod -R 775 /app/storage /app/bootstrap/cache
 chmod -R 755 /app/public
 
 # Ensure critical directories exist and have correct permissions
-mkdir -p /app/storage/logs /app/storage/framework/{cache,sessions,views} /app/storage/app/public
-chown -R www-data:www-data /app/storage
-chmod -R 775 /app/storage
+mkdir -p /app/storage/logs /app/storage/framework/{cache,sessions,views} /app/storage/app/public /app/bootstrap/cache
+chown -R www-data:www-data /app/storage /app/bootstrap/cache
+chmod -R 775 /app/storage /app/bootstrap/cache
 
 echo "✅ Laravel application ready!"
 
