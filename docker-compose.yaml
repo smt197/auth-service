@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Laravel Application uniquement
   app:
-    image: your-laravel-image:latest  # Remplacez par votre image
+    image: laravel-app:latest  # Remplacez par votre image
     container_name: laravel_app
     restart: unless-stopped
     ports:
