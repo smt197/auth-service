@@ -1,72 +1,9 @@
 version: '3.8'
 
 services:
-  # MySQL Database
-  mysql_database:
-    image: mysql:8.0
-    container_name: mysql_database
-    restart: unless-stopped
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: frankenphp
-      MYSQL_USER: smt197
-      MYSQL_PASSWORD: Serigne197
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - laravel
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Redis Cache & Session
-  redis:
-    image: redis:alpine
-    container_name: redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - laravel
-    command: redis-server --appendonly yes
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # RabbitMQ Message Queue
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: rabbitmq
-    restart: unless-stopped
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin123
-      RABBITMQ_DEFAULT_VHOST: /
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-      - rabbitmq_log:/var/log/rabbitmq
-    networks:
-      - laravel
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
-  # Laravel Application
+  # Laravel Application uniquement
   app:
-    image: laravel-app:latest  # Remplacez par votre image
+    image: your-laravel-image:latest  # Remplacez par votre image
     container_name: laravel_app
     restart: unless-stopped
     ports:
@@ -79,17 +16,17 @@ services:
       APP_DEBUG: "false"
       APP_URL: http://localhost:8001
 
-      # Database Configuration
+      # Database Configuration - Utilisez le nom de votre conteneur MySQL existant
       DB_CONNECTION: mysql
-      DB_HOST: mysql_database
+      DB_HOST: mysql_database  # Nom de votre conteneur MySQL existant
       DB_PORT: 3306
       DB_DATABASE: frankenphp
       DB_USERNAME: smt197
       DB_PASSWORD: Serigne197
 
-      # Redis Configuration
+      # Redis Configuration - Utilisez le nom de votre conteneur Redis existant
       REDIS_CLIENT: phpredis
-      REDIS_HOST: redis
+      REDIS_HOST: redis  # Nom de votre conteneur Redis existant
       REDIS_PASSWORD: null
       REDIS_PORT: 6379
 
@@ -98,11 +35,11 @@ services:
       CACHE_STORE: redis
       QUEUE_CONNECTION: rabbitmq
 
-      # RabbitMQ Configuration
-      RABBITMQ_HOST: rabbitmq
+      # RabbitMQ Configuration - Utilisez le nom de votre conteneur RabbitMQ existant
+      RABBITMQ_HOST: rabbitmq  # Nom de votre conteneur RabbitMQ existant
       RABBITMQ_PORT: 5672
-      RABBITMQ_USER: admin
-      RABBITMQ_PASSWORD: admin123
+      RABBITMQ_USER: admin  # Vérifiez vos credentials RabbitMQ
+      RABBITMQ_PASSWORD: admin123  # Vérifiez vos credentials RabbitMQ
       RABBITMQ_VHOST: /
 
       # Mail Configuration
@@ -122,29 +59,14 @@ services:
       - storage_data:/app/storage/app
       - logs_data:/app/storage/logs
     networks:
-      - laravel
-    depends_on:
-      mysql_database:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-
-networks:
-  laravel:
-    driver: bridge
+      - bridge  # Réseau par défaut de Docker
 
 volumes:
-  mysql_data:
-    driver: local
-  redis_data:
-    driver: local
-  rabbitmq_data:
-    driver: local
-  rabbitmq_log:
-    driver: local
   storage_data:
     driver: local
   logs_data:
     driver: local
+
+networks:
+  bridge:
+    external: true  # Utilise le réseau bridge par défaut
