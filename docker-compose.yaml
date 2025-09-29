@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: supervisor.dockerfile
+      dockerfile: auth.dockerfile
     ports:
       - "8001:80"
     environment:
