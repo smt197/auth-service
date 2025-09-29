@@ -6,7 +6,6 @@ services:
       context: .
       dockerfile: auth.dockerfile
     environment:
-      # Serversideup automations
       - AUTORUN_ENABLED=true
       - AUTORUN_LARAVEL_OCTANE=true
       - OCTANE_SERVER=frankenphp
