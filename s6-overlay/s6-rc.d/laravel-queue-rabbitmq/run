@@ -1,6 +1,7 @@
 #!/command/execlineb -P
 with-contenv
 cd /var/www/html
+s6-setuidgid www-data
 php
 artisan
 queue:work
