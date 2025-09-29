@@ -4,14 +4,19 @@ ENV PHP_OPCACHE_ENABLE=1
 
 USER root
 
-# Install required PHP extensions and system dependencies
 RUN install-php-extensions \
-    openssl \
-    curl \
-    opcache \
-    pcntl \
-    intl \
-    gd
+   pdo_mysql \
+   mysqli \
+   mbstring \
+   xml \
+   zip \
+   bcmath \
+   gd \
+   redis \
+   opcache \
+   pcntl \
+   sockets
+
 # Copy application files
 COPY --chown=www-data:www-data . /var/www/html
 
