@@ -30,6 +30,13 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev
 RUN composer require laravel/octane --no-interaction --ignore-platform-reqs \
     && php artisan octane:install --server=frankenphp --no-interaction
 
+# Set Laravel directory permissions
+RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views storage/app bootstrap/cache \
+    && touch storage/logs/laravel.log \
+    && chown -R www-data:www-data . \
+    && chmod -R 775 storage bootstrap/cache \
+    && chmod -R 777 storage/logs \
+    && chmod 666 storage/logs/laravel.log
 
 # Remove composer cache
 RUN rm -rf /var/www/html/.composer/cache
