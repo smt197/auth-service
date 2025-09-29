@@ -14,7 +14,7 @@ services:
       - OCTANE_ADMIN_PORT=2019
       - LOG_CHANNEL=stderr
       # Octane state file path
-      - OCTANE_STATE_PATH=/tmp/octane/state.json
+      - OCTANE_STATE_FILE=/tmp/octane/state.json
       # Laravel environment variables
       - APP_NAME=${APP_NAME}
       - APP_ENV=${APP_ENV}
