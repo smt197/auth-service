@@ -31,7 +31,10 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache \
     && chmod -R 777 storage/logs \
-    && chmod 666 storage/logs/laravel.log
+    && chmod 666 storage/logs/laravel.log \
+    && mkdir -p /tmp/octane \
+    && chown www-data:www-data /tmp/octane \
+    && chmod 755 /tmp/octane
 
 # Copy s6-overlay services for Laravel (before switching user)
 COPY s6-overlay /etc/s6-overlay/

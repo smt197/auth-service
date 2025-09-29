@@ -1,5 +1,7 @@
 #!/command/execlineb -P
 with-contenv
+backtick -E { mkdir -p /tmp/octane }
+export OCTANE_STATE_PATH /tmp/octane/state.json
 cd /var/www/html
 php
 artisan
