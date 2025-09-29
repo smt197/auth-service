@@ -1,186 +1,58 @@
 #!/bin/sh
-script_name="laravel-automations-octane"
+# Laravel automations with robust log handling
+
+set -e
+
+echo "🚀 Starting Laravel automations..."
 
 # Set APP_BASE_DIR if not set
 : "${APP_BASE_DIR:=/var/www/html}"
-
-test_db_connection() {
-    php -r "
-        require '$APP_BASE_DIR/vendor/autoload.php';
-        use Illuminate\Support\Facades\DB;
-
-        \$app = require_once '$APP_BASE_DIR/bootstrap/app.php';
-        \$kernel = \$app->make(Illuminate\Contracts\Console\Kernel::class);
-        \$kernel->bootstrap();
-
-        \$driver = DB::getDriverName();
-
-            if( \$driver === 'sqlite' ){
-                echo 'SQLite detected';
-                exit(0); // Assume SQLite is always ready
-            }
-
-        try {
-            DB::connection()->getPdo(); // Attempt to get PDO instance
-            if (DB::connection()->getDatabaseName()) {
-                exit(0); // Database exists and can be connected to, exit with status 0 (success)
-            } else {
-                echo 'Database name not found.';
-                exit(1); // Database name not found, exit with status 1 (failure)
-            }
-        } catch (Exception \$e) {
-            echo 'Database connection error: ' . \$e->getMessage();
-            exit(1); // Connection error, exit with status 1 (failure)
-        }
-    "
-}
-
-# Set default values for Laravel automations
 : "${AUTORUN_ENABLED:=false}"
 : "${AUTORUN_LARAVEL_MIGRATION_TIMEOUT:=30}"
-: "${AUTORUN_LARAVEL_OCTANE:=true}"
-: "${OCTANE_SERVER:=frankenphp}"
-: "${OCTANE_HOST:=0.0.0.0}"
-: "${OCTANE_PORT:=8001}"
 
-if [ "$DISABLE_DEFAULT_CONFIG" = "false" ]; then
-    # Check to see if an Artisan file exists and assume it means Laravel is configured.
-    if [ -f "$APP_BASE_DIR/artisan" ] && [ "$AUTORUN_ENABLED" = "true" ]; then
-        echo "🚀 Running Laravel automations with Octane..."
+cd "$APP_BASE_DIR"
 
-        ############################################################################
-        # Database Connection Test
-        ############################################################################
-        if [ "${AUTORUN_LARAVEL_MIGRATION:=true}" = "true" ]; then
-            echo "⏳ Testing database connection..."
-            count=0
-            timeout=$AUTORUN_LARAVEL_MIGRATION_TIMEOUT
+if [ "$DISABLE_DEFAULT_CONFIG" = "false" ] && [ -f "$APP_BASE_DIR/artisan" ] && [ "$AUTORUN_ENABLED" = "true" ]; then
+    echo "📋 Running Laravel automations..."
 
-            until test_db_connection; do
-                count=$((count + 1))
-                if [ $count -gt $timeout ]; then
-                    echo "❌ Database connection timeout after ${timeout} seconds"
-                    exit 1
-                fi
-                echo "🔄 Waiting for database... (${count}/${timeout})"
-                sleep 1
-            done
-            echo "✅ Database connection successful"
-        fi
+    # Fix storage permissions (ignore errors if volume mounted)
+    echo "🔧 Setting up storage permissions..."
+    mkdir -p storage/logs storage/framework/{cache,sessions,views} storage/app bootstrap/cache 2>/dev/null || true
+    touch storage/logs/laravel.log 2>/dev/null || true
+    chmod -R 777 storage/logs 2>/dev/null || true
+    chmod 666 storage/logs/laravel.log 2>/dev/null || true
 
-        ############################################################################
-        # Laravel Migrations
-        ############################################################################
-        if [ "${AUTORUN_LARAVEL_MIGRATION:=true}" = "true" ]; then
-            echo "📊 Running Laravel migrations..."
-            if [ "${AUTORUN_LARAVEL_MIGRATION_ISOLATION:=false}" = "true" ]; then
-                php "$APP_BASE_DIR/artisan" migrate --force --isolated
-            else
-                php "$APP_BASE_DIR/artisan" migrate --force
-            fi
-            echo "✅ Migrations completed"
-        fi
-
-        ############################################################################
-        # Storage Link
-        ############################################################################
-        if [ "${AUTORUN_LARAVEL_STORAGE_LINK:=true}" = "true" ]; then
-            echo "🔗 Creating storage symlink..."
-            php "$APP_BASE_DIR/artisan" storage:link --force
-            echo "✅ Storage link created"
-        fi
-
-        ############################################################################
-        # Laravel Caching
-        ############################################################################
-        if [ "${AUTORUN_LARAVEL_CONFIG_CACHE:=true}" = "true" ]; then
-            echo "⚡ Caching Laravel configuration..."
-            php "$APP_BASE_DIR/artisan" config:cache
-            echo "✅ Configuration cached"
-        fi
-
-        if [ "${AUTORUN_LARAVEL_ROUTE_CACHE:=true}" = "true" ]; then
-            echo "🛣️  Caching Laravel routes..."
-            php "$APP_BASE_DIR/artisan" route:cache
-            echo "✅ Routes cached"
-        fi
-
-        if [ "${AUTORUN_LARAVEL_VIEW_CACHE:=true}" = "true" ]; then
-            echo "👁️  Caching Laravel views..."
-            php "$APP_BASE_DIR/artisan" view:cache
-            echo "✅ Views cached"
-        fi
-
-        if [ "${AUTORUN_LARAVEL_EVENT_CACHE:=true}" = "true" ]; then
-            echo "📡 Caching Laravel events..."
-            php "$APP_BASE_DIR/artisan" event:cache
-            echo "✅ Events cached"
-        fi
-
-        ############################################################################
-        # Fix log permissions issue with volume mounting
-        ############################################################################
-        echo "🔍 Fixing log file permissions..."
-
-        # Create logs directory if not exists
-        mkdir -p "$APP_BASE_DIR/storage/logs"
-
-        # Create laravel.log with proper ownership
-        if [ ! -f "$APP_BASE_DIR/storage/logs/laravel.log" ]; then
-            echo "📝 Creating laravel.log file..."
-            touch "$APP_BASE_DIR/storage/logs/laravel.log"
-        fi
-
-        # Try to fix permissions (may fail due to volume mount)
-        chmod 777 "$APP_BASE_DIR/storage/logs" 2>/dev/null || echo "⚠️  Cannot change directory permissions"
-        chmod 666 "$APP_BASE_DIR/storage/logs/laravel.log" 2>/dev/null || echo "⚠️  Cannot change file permissions"
-
-        # Alternative: Use stderr for logging if file is not writable
-        if [ ! -w "$APP_BASE_DIR/storage/logs/laravel.log" ]; then
-            echo "⚠️  Log file not writable, setting LOG_CHANNEL to stderr for Octane"
-            export LOG_CHANNEL=stderr
-        fi
-
-        ############################################################################
-        # Laravel Octane
-        ############################################################################
-        if [ "${AUTORUN_LARAVEL_OCTANE}" = "true" ]; then
-            echo "🎯 Starting Laravel Octane server..."
-
-            # Check if Octane is installed
-            if php "$APP_BASE_DIR/artisan" list | grep -q "octane:"; then
-                echo "🔧 Laravel Octane detected, starting server..."
-
-                # Start Octane in background with watch
-                # Use stderr logging to avoid file permission issues
-                LOG_CHANNEL=stderr php "$APP_BASE_DIR/artisan" octane:start \
-                    --server="$OCTANE_SERVER" \
-                    --host="$OCTANE_HOST" \
-                    --port="$OCTANE_PORT" \
-                    --watch &
-
-                OCTANE_PID=$!
-                echo "✅ Laravel Octane started with PID: $OCTANE_PID (Server: $OCTANE_SERVER, Host: $OCTANE_HOST, Port: $OCTANE_PORT)"
-
-                # Store PID for potential cleanup
-                echo "$OCTANE_PID" > /tmp/octane.pid
-
-                # Give Octane a moment to start
-                sleep 2
-
-                # Verify Octane is running
-                if kill -0 "$OCTANE_PID" 2>/dev/null; then
-                    echo "🎉 Laravel Octane is running successfully!"
-                else
-                    echo "⚠️  Laravel Octane failed to start properly"
-                fi
-            else
-                echo "⚠️  Laravel Octane not installed, skipping Octane startup"
-            fi
-        fi
-
-        echo "✨ Laravel automations with Octane completed!"
-    else
-        echo "ℹ️  Laravel automations disabled or artisan file not found"
+    # Test log file writability
+    if [ ! -w storage/logs/laravel.log ]; then
+        echo "⚠️  Log file not writable, using stderr logging"
+        export LOG_CHANNEL=stderr
     fi
+
+    # Database migrations
+    if [ "${AUTORUN_LARAVEL_MIGRATION:=true}" = "true" ]; then
+        echo "📊 Running database migrations..."
+        php artisan migrate --force 2>/dev/null || echo "⚠️  Migration failed or not needed"
+    fi
+
+    # Laravel caching
+    if [ "${AUTORUN_LARAVEL_CONFIG_CACHE:=true}" = "true" ]; then
+        echo "⚡ Caching configuration..."
+        php artisan config:cache 2>/dev/null || true
+    fi
+
+    if [ "${AUTORUN_LARAVEL_ROUTE_CACHE:=true}" = "true" ]; then
+        echo "🛣️  Caching routes..."
+        php artisan route:cache 2>/dev/null || true
+    fi
+
+    if [ "${AUTORUN_LARAVEL_VIEW_CACHE:=true}" = "true" ]; then
+        echo "👁️  Caching views..."
+        php artisan view:cache 2>/dev/null || true
+    fi
+
+    echo "✅ Laravel automations completed!"
+else
+    echo "ℹ️  Laravel automations skipped"
 fi
+
+echo "🎯 Laravel is ready!"

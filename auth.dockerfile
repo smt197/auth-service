@@ -23,7 +23,7 @@ RUN install-php-extensions \
 # Copy application files
 COPY --chown=www-data:www-data . .
 
-# COPY --chown=www-data:www-data --chmod=755 automation.sh /etc/entrypoint.d/
+COPY --chown=root:root --chmod=755 automations.sh /etc/entrypoint.d/60-laravel-automations.sh
 
 # Create storage directories and fix permissions as root
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views storage/app bootstrap/cache \
