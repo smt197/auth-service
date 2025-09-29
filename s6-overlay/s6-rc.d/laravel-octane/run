@@ -1,8 +1,8 @@
 #!/command/execlineb -P
 with-contenv
-importas OCTANE_HOST OCTANE_HOST 0.0.0.0
-importas OCTANE_PORT OCTANE_PORT 8001
-importas OCTANE_ADMIN_PORT OCTANE_ADMIN_PORT 2019
+importas -D "0.0.0.0" OCTANE_HOST OCTANE_HOST
+importas -D "8001" OCTANE_PORT OCTANE_PORT
+importas -D "2019" OCTANE_ADMIN_PORT OCTANE_ADMIN_PORT
 export OCTANE_STATE_PATH /tmp/octane/state.json
 cd /var/www/html
 php
