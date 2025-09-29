@@ -1,6 +1,8 @@
 FROM serversideup/php:8.3-fpm-nginx-alpine
 
 ENV PHP_OPCACHE_ENABLE=1
+ENV OCTANE_STATE_FILE=/var/www/html/storage/framework/octane-state.json
+
 
 WORKDIR /var/www/html
 
@@ -25,16 +27,13 @@ COPY --chown=www-data:www-data . .
 
 COPY --chown=root:root --chmod=755 automations.sh /etc/entrypoint.d/60-laravel-automations.sh
 
-# Create storage directories and fix permissions as root
-RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views storage/app bootstrap/cache \
+# Create all necessary directories with correct permissions
+RUN mkdir -p storage/framework/{sessions,views,cache} storage/app bootstrap/cache \
     && touch storage/logs/laravel.log \
+    && touch ${OCTANE_STATE_FILE} \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache \
-    && chmod -R 777 storage/logs \
-    && chmod 666 storage/logs/laravel.log \
-    && mkdir -p /tmp/octane \
-    && chown www-data:www-data /tmp/octane \
-    && chmod 777 /tmp/octane
+    && chmod 666 ${OCTANE_STATE_FILE}
 
 # Copy s6-overlay services for Laravel (before switching user)
 COPY s6-overlay /etc/s6-overlay/
