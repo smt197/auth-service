@@ -1,14 +1,17 @@
 #!/command/execlineb -P
 with-contenv
-backtick -E { mkdir -p /tmp/octane }
+importas OCTANE_HOST OCTANE_HOST 0.0.0.0
+importas OCTANE_PORT OCTANE_PORT 8001
+importas OCTANE_ADMIN_PORT OCTANE_ADMIN_PORT 2019
 export OCTANE_STATE_PATH /tmp/octane/state.json
 cd /var/www/html
 php
 artisan
 octane:start
 --server=frankenphp
---host=0.0.0.0
---port=8001
+--host=${OCTANE_HOST}
+--port=${OCTANE_PORT}
+--admin-port=${OCTANE_ADMIN_PORT}
 --workers=auto
 --max-requests=1000
 --watch
