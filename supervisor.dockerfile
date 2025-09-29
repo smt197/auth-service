@@ -13,7 +13,10 @@ RUN install-php-extensions \
    gd \
    redis \
    opcache \
-   pcntl
+   pcntl \
+   curl \
+   fileinfo \
+   tokenizer
 
 
 # Installer composer
@@ -32,27 +35,10 @@ WORKDIR /app
 # Copier TOUT le projet Laravel
 COPY . /app
 
-# Install PHP extensions
-RUN pecl install xdebug
+# Copier le Caddyfile
+COPY Caddyfile /app/Caddyfile
 
-# Install Laravel Octane first (before other dependencies)
-RUN composer require laravel/octane --no-interaction --ignore-platform-reqs
-RUN php /app/artisan octane:install --server=frankenphp
-
-# Install PHP dependencies
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --optimize-autoloader \
-    --no-progress \
-    --ignore-platform-reqs \
-    && rm -rf /root/.composer/cache
-
-# Enable PHP extensions
-RUN docker-php-ext-enable xdebug
-
-
-# Créer les répertoires nécessaires avec les bonnes permissions
+# Créer les répertoires nécessaires d'abord
 RUN mkdir -p /app/storage/app/public \
     /app/storage/framework/cache \
     /app/storage/framework/sessions \
@@ -61,6 +47,18 @@ RUN mkdir -p /app/storage/app/public \
     /app/bootstrap/cache \
     && chown -R www-data:www-data /app/storage /app/bootstrap/cache \
     && chmod -R 775 /app/storage /app/bootstrap/cache
+
+# Install PHP extensions
+RUN pecl install xdebug
+
+# Enable PHP extensions
+RUN docker-php-ext-enable xdebug
+
+# Vérifier que PHP et les extensions sont ok, puis installer les dépendances
+RUN php -m && \
+    composer --version && \
+    composer validate --no-check-publish && \
+    composer install --no-interaction --ignore-platform-reqs
 
 
 
@@ -77,6 +75,5 @@ EXPOSE 80 443 2019
 
 # Utiliser le script de démarrage qui lance supervisor
 CMD ["/usr/local/bin/docker-entrypoint.sh"]
-
 
 
