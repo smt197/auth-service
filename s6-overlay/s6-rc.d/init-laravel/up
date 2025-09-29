@@ -1,0 +1,15 @@
+#!/command/execlineb -P
+# Fix Laravel storage permissions after volume mount
+with-contenv
+cd /var/www/html
+
+# Create directories if they don't exist
+if { mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views storage/app bootstrap/cache }
+
+# Create log file if it doesn't exist
+if { touch storage/logs/laravel.log }
+
+# Set permissions
+if { chown -R www-data:www-data storage bootstrap/cache }
+if { chmod -R 775 storage bootstrap/cache }
+if { chmod -R 777 storage/logs }

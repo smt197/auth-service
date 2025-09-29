@@ -36,6 +36,7 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
 # Copy s6-overlay services for Laravel (before switching user)
 COPY s6-overlay /etc/s6-overlay/
 RUN find /etc/s6-overlay -name "run" -type f -exec chmod +x {} \; \
+    && find /etc/s6-overlay -name "up" -type f -exec chmod +x {} \; \
     && mkdir -p /etc/s6-overlay/s6-rc.d/user/contents.d \
     && echo "laravel-services" > /etc/s6-overlay/s6-rc.d/user/contents.d/laravel-services
 
