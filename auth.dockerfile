@@ -6,7 +6,7 @@ WORKDIR /var/www/html
 
 USER root
 
-# Install PHP extensions and prepare directories in one layer
+# Install PHP extensions
 RUN install-php-extensions \
        pdo_mysql \
        mysqli \
@@ -18,16 +18,7 @@ RUN install-php-extensions \
        redis \
        opcache \
        pcntl \
-       sockets \
-    && mkdir -p storage/logs \
-               storage/framework/cache \
-               storage/framework/sessions \
-               storage/framework/views \
-               storage/app \
-               bootstrap/cache \
-    && touch storage/logs/laravel.log \
-    && chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+       sockets
 
 # Copy custom automations script
 COPY --chown=root:root automations.sh /etc/entrypoint.d/60-custom-automations.sh
@@ -36,10 +27,13 @@ RUN chmod +x /etc/entrypoint.d/60-custom-automations.sh
 # Copy application files
 COPY --chown=www-data:www-data . .
 
-# Fix permissions for storage and bootstrap cache as root
-RUN chown -R www-data:www-data storage bootstrap/cache \
+# Create storage directories and fix permissions as root
+RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views storage/app bootstrap/cache \
+    && touch storage/logs/laravel.log \
+    && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache \
-    && chmod -R 777 storage/logs
+    && chmod -R 777 storage/logs \
+    && chmod 666 storage/logs/laravel.log
 
 # Switch to non-root user
 USER www-data

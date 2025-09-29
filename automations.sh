@@ -118,6 +118,20 @@ if [ "$DISABLE_DEFAULT_CONFIG" = "false" ]; then
         fi
 
         ############################################################################
+        # Verify log file permissions
+        ############################################################################
+        echo "🔍 Verifying log file permissions..."
+        if [ ! -f "$APP_BASE_DIR/storage/logs/laravel.log" ]; then
+            echo "📝 Creating laravel.log file..."
+            touch "$APP_BASE_DIR/storage/logs/laravel.log"
+        fi
+
+        if [ ! -w "$APP_BASE_DIR/storage/logs/laravel.log" ]; then
+            echo "⚠️  laravel.log is not writable, attempting to fix..."
+            chmod 666 "$APP_BASE_DIR/storage/logs/laravel.log" 2>/dev/null || echo "❌ Cannot fix log permissions"
+        fi
+
+        ############################################################################
         # Laravel Octane
         ############################################################################
         if [ "${AUTORUN_LARAVEL_OCTANE}" = "true" ]; then
