@@ -1,14 +1,10 @@
 #!/bin/sh
-# Ensure octane directory exists and has correct permissions
-mkdir -p /tmp/octane
-chmod 777 /tmp/octane
-
 cd /var/www/html
 
-# Export Octane state file environment variable
-export OCTANE_STATE_FILE=/tmp/octane/state.json
+# Ensure Octane state file has correct permissions
+chmod 666 storage/framework/octane-state.json 2>/dev/null || true
 
-# Start Octane
+# Start Octane (OCTANE_STATE_FILE is already set in Dockerfile ENV)
 exec php artisan octane:start \
     --server=frankenphp \
     --host="${OCTANE_HOST:-0.0.0.0}" \
