@@ -118,17 +118,27 @@ if [ "$DISABLE_DEFAULT_CONFIG" = "false" ]; then
         fi
 
         ############################################################################
-        # Verify log file permissions
+        # Fix log permissions issue with volume mounting
         ############################################################################
-        echo "🔍 Verifying log file permissions..."
+        echo "🔍 Fixing log file permissions..."
+
+        # Create logs directory if not exists
+        mkdir -p "$APP_BASE_DIR/storage/logs"
+
+        # Create laravel.log with proper ownership
         if [ ! -f "$APP_BASE_DIR/storage/logs/laravel.log" ]; then
             echo "📝 Creating laravel.log file..."
             touch "$APP_BASE_DIR/storage/logs/laravel.log"
         fi
 
+        # Try to fix permissions (may fail due to volume mount)
+        chmod 777 "$APP_BASE_DIR/storage/logs" 2>/dev/null || echo "⚠️  Cannot change directory permissions"
+        chmod 666 "$APP_BASE_DIR/storage/logs/laravel.log" 2>/dev/null || echo "⚠️  Cannot change file permissions"
+
+        # Alternative: Use stderr for logging if file is not writable
         if [ ! -w "$APP_BASE_DIR/storage/logs/laravel.log" ]; then
-            echo "⚠️  laravel.log is not writable, attempting to fix..."
-            chmod 666 "$APP_BASE_DIR/storage/logs/laravel.log" 2>/dev/null || echo "❌ Cannot fix log permissions"
+            echo "⚠️  Log file not writable, setting LOG_CHANNEL to stderr for Octane"
+            export LOG_CHANNEL=stderr
         fi
 
         ############################################################################
@@ -142,7 +152,8 @@ if [ "$DISABLE_DEFAULT_CONFIG" = "false" ]; then
                 echo "🔧 Laravel Octane detected, starting server..."
 
                 # Start Octane in background with watch
-                php "$APP_BASE_DIR/artisan" octane:start \
+                # Use stderr logging to avoid file permission issues
+                LOG_CHANNEL=stderr php "$APP_BASE_DIR/artisan" octane:start \
                     --server="$OCTANE_SERVER" \
                     --host="$OCTANE_HOST" \
                     --port="$OCTANE_PORT" \

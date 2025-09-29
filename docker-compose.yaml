@@ -12,6 +12,7 @@ services:
       - OCTANE_SERVER=frankenphp
       - OCTANE_HOST=0.0.0.0
       - OCTANE_PORT=8001
+      - LOG_CHANNEL=stderr
       # Laravel environment variables
       - APP_NAME=${APP_NAME}
       - APP_ENV=${APP_ENV}
