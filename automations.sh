@@ -41,7 +41,7 @@ test_db_connection() {
 : "${AUTORUN_LARAVEL_OCTANE:=true}"
 : "${OCTANE_SERVER:=frankenphp}"
 : "${OCTANE_HOST:=0.0.0.0}"
-: "${OCTANE_PORT:=8000}"
+: "${OCTANE_PORT:=8001}"
 
 if [ "$DISABLE_DEFAULT_CONFIG" = "false" ]; then
     # Check to see if an Artisan file exists and assume it means Laravel is configured.
@@ -127,11 +127,12 @@ if [ "$DISABLE_DEFAULT_CONFIG" = "false" ]; then
             if php "$APP_BASE_DIR/artisan" list | grep -q "octane:"; then
                 echo "🔧 Laravel Octane detected, starting server..."
 
-                # Start Octane in background
+                # Start Octane in background with watch
                 php "$APP_BASE_DIR/artisan" octane:start \
                     --server="$OCTANE_SERVER" \
                     --host="$OCTANE_HOST" \
-                    --port="$OCTANE_PORT" &
+                    --port="$OCTANE_PORT" \
+                    --watch &
 
                 OCTANE_PID=$!
                 echo "✅ Laravel Octane started with PID: $OCTANE_PID (Server: $OCTANE_SERVER, Host: $OCTANE_HOST, Port: $OCTANE_PORT)"
