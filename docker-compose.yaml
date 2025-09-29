@@ -6,6 +6,13 @@ services:
       context: .
       dockerfile: auth.dockerfile
     environment:
+      # Serversideup automations
+      - AUTORUN_ENABLED=true
+      - AUTORUN_LARAVEL_OCTANE=true
+      - OCTANE_SERVER=frankenphp
+      - OCTANE_HOST=0.0.0.0
+      - OCTANE_PORT=8000
+      # Laravel environment variables
       - APP_NAME=${APP_NAME}
       - APP_ENV=${APP_ENV}
       - APP_KEY=${APP_KEY}
@@ -62,8 +69,8 @@ services:
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
       - RABBITMQ_VHOST=${RABBITMQ_VHOST}
     volumes:
-      - storage_data:/app/storage/app
-      - ./storage/logs:/app/storage/logs
+      - storage_data:/var/www/html/storage/app
+      - ./storage/logs:/var/www/html/storage/logs
     networks:
       - laravel
     restart: unless-stopped

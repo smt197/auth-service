@@ -1,6 +1,9 @@
 #!/bin/sh
 script_name="laravel-automations-octane"
 
+# Set APP_BASE_DIR if not set
+: "${APP_BASE_DIR:=/var/www/html}"
+
 test_db_connection() {
     php -r "
         require '$APP_BASE_DIR/vendor/autoload.php';
