@@ -1,0 +1,12 @@
+#!/command/execlineb -P
+with-contenv
+cd /var/www/html
+php
+artisan
+octane:frankenphp
+--host=0.0.0.0
+--port=8001
+--workers=auto
+--task-workers=auto
+--max-requests=1000
+--watch

@@ -20,9 +20,9 @@ RUN install-php-extensions \
        pcntl \
        sockets
 
-# Copy custom automations script
-COPY --chown=root:root automations.sh /etc/entrypoint.d/60-custom-automations.sh
-RUN chmod +x /etc/entrypoint.d/60-custom-automations.sh
+# Copy s6-overlay services for Laravel
+COPY s6-overlay /etc/s6-overlay/
+RUN find /etc/s6-overlay -name "run" -type f -exec chmod +x {} \;
 
 # Copy application files
 COPY --chown=www-data:www-data . .
