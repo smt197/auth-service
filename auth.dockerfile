@@ -29,6 +29,10 @@ RUN install-php-extensions \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
+# Copy custom automations script
+COPY --chown=root:root automations.sh /etc/entrypoint.d/60-custom-automations.sh
+RUN chmod +x /etc/entrypoint.d/60-custom-automations.sh
+
 # Copy application files
 COPY --chown=www-data:www-data . .
 
