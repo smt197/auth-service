@@ -36,6 +36,11 @@ RUN chmod +x /etc/entrypoint.d/60-custom-automations.sh
 # Copy application files
 COPY --chown=www-data:www-data . .
 
+# Fix permissions for storage and bootstrap cache as root
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache \
+    && chmod -R 777 storage/logs
+
 # Switch to non-root user
 USER www-data
 
