@@ -74,12 +74,12 @@ services:
       - storage_data:/var/www/html/storage/app
       - ./storage/logs:/var/www/html/storage/logs
     networks:
-      - laravel
+      - microservices_network
     restart: unless-stopped
 
 networks:
-  laravel:
-    driver: bridge
+  microservices_network:
+    external: true
 
 volumes:
   storage_data:
