@@ -14,6 +14,8 @@ services:
       - OCTANE_ADMIN_PORT=2019
       # Laravel environment variables
       - APP_NAME=${APP_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - OCTANE_STATE_FILE=${OCTANE_STATE_FILE}
       - APP_ENV=${APP_ENV}
       - APP_KEY=${APP_KEY}
       - APP_DEBUG=${APP_DEBUG}
