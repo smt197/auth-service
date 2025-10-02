@@ -29,3 +29,12 @@ Route::middleware('auth:api')->group(function () {
         return response()->json(auth()->user());
     });
 });
+
+Route::get('/test-db', function () {
+    try {
+        DB::connection()->getPdo();
+        return response()->json(['database' => 'connected']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+});
