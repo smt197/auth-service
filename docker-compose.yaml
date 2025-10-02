@@ -72,7 +72,6 @@ services:
       - RABBITMQ_VHOST=${RABBITMQ_VHOST}
     volumes:
       - storage_data:/var/www/html/storage/app
-      - ./storage/logs:/var/www/html/storage/logs
     networks:
       - microservices_network
     restart: unless-stopped

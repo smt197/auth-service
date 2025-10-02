@@ -28,11 +28,11 @@ return [
     'paths' => ['api/*', 'broadcasting/auth', 'sanctum/csrf-cookie'],
     'allowed_methods' => ['*'],
     'allowed_origins' => [
-        'http://authentificationservice.test:8080',
-        'http://user-microservice.test:8080',
-        'http://authentificationservice.test',
-        'http://user-microservice.test',
-        'test'
+        'http://backend.192.168.1.10.sslip.io:8001',
+        'http://user.192.168.1.10.sslip.io:8003',
+        'http://backend.192.168.1.10.sslip.io',
+        'http://user.192.168.1.10.sslip.io',
+        '192.168.1.10.sslip.io'
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],

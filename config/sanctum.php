@@ -19,9 +19,11 @@ return [
         '%s%s',
         'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
         'localhost:4200', // Ajoutez votre domaine ici
-        'test', // Ajoutez votre domaine ici
+        '192.168.1.10.sslip.io', // Ajoutez votre domaine ici
         'http://backend.192.168.1.10.sslip.io:8001/',
-        'http://user.192.168.1.10.sslip.io:8002/',
+        'http://user.192.168.1.10.sslip.io:8003/',
+        'http://backend.192.168.1.10.sslip.io/',
+        'http://user.192.168.1.10.sslip.io/',
         // Ajoutez votre domaine ici
         Sanctum::currentApplicationUrlWithPort(),
         // Sanctum::currentRequestHost(),
