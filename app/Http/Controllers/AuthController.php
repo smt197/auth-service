@@ -116,6 +116,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Login successful',
+            'token' => $token,
             'user' => $user->only(['id', 'name', 'email', 'email_verified_at']),
         ], 200)->withCookie($cookie);
     }
