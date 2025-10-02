@@ -82,7 +82,7 @@ services:
 
 networks:
   microservices_network:
-    driver: bridge
+     external: true
 
 volumes:
   storage_data:
