@@ -21,7 +21,7 @@ Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verify'])
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout']);
     Route::get('/validate-token', [AuthController::class, 'validateToken']);
 
